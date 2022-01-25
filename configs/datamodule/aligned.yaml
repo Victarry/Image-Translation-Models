@@ -1,0 +1,4 @@
+_target_: src.datamodules.aligned_dataset.AlignedDatamodule
+data_root: ${data_dir}/maps
+batch_size: 4
+num_workers: 8

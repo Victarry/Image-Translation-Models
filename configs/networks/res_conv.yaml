@@ -1,0 +1,7 @@
+generator:
+  _target_: src.networks.conv.ResnetGenerator
+  input_nc: null
+  output_nc: null
+discriminator:
+  _target_: src.networks.conv.PixelDiscriminator
+  input_nc: null

@@ -1,0 +1,13 @@
+_target_: src.models.pix2pix.Model
+loss_mode: vanilla
+channels: 3
+width: 600
+height: 600
+lrG: 0.001
+lrD: 0.0002
+b1: 0.5
+b2: 0.999
+optim: adam
+input_normalize: True
+netG: ${networks.generator}
+netD: ${networks.discriminator}
