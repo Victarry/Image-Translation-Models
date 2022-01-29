@@ -3,7 +3,7 @@
 ++++
 <div align="center">
 ++++
-= Colletions of Image Translation Models
+= Collections of Image Translation Models
 
 image:https://img.shields.io/badge/-Python 3.7--3.9-blue?style=for-the-badge&logo=python&logoColor=white[python, link=https://pytorch.org/get-started/locally/]
 image:https://img.shields.io/badge/-PyTorch 1.8+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white[pytorch, link=https://pytorch.org/]
