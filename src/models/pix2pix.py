@@ -1,35 +1,29 @@
 """
-Traditional Unconditional GANs, with different loss modes including:
-1. Binary Cross Entroy (vanilla_gan)
-2. Least Square Error(lsgan)
+Image-to-Image Translation with Conditional Adversarial Networks.
+https://arxiv.org/abs/1611.07004
 """
-from pathlib import Path
-
 import hydra
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-import torchvision
-from src.utils import utils
 from .base import BaseModel
-import torchmetrics
 
 
 class Model(BaseModel):
     def __init__(
         self,
-        channels,
-        width,
-        height,
-        netG,
-        netD,
-        latent_dim=100,
+        channels, # channels of input imagee
+        width, # width of input image
+        height, # height of input image
+        netG, # config dict of generator
+        netD, # config dict of discriminator
         loss_mode="vanilla",
         lrG: float = 0.0002,
         lrD: float = 0.0002,
         b1: float = 0.5,
         b2: float = 0.999,
         input_normalize=True,
+        lambda_L1=100, 
         optim="adam",
         **kwargs,
     ):
@@ -65,6 +59,9 @@ class Model(BaseModel):
             # adversarial loss is binary cross-entropy
             g_loss = self.adversarial_loss(fake_logit, valid)
             self.log("train_loss/g_loss", g_loss, prog_bar=True)
+
+            if self.hparams.lambda_L1 > 0:
+                g_loss = g_loss + F.l1_loss(fake_B, real_B)
         
             if self.global_step % 200 == 0:
                 # log sampled images
