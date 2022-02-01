@@ -26,6 +26,9 @@ work_dir: ${hydra:runtime.cwd}
 # path to folder with data
 data_dir: ${work_dir}/datasets/
 
+# which dataset to use in the datasets folder
+dataset: null
+
 # path to logging
 log_dir: logs
 

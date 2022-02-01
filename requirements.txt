@@ -5,11 +5,11 @@ pytorch-lightning>=1.3.8
 
 
 # --------- hydra --------- #
-hydra-core==1.1.0
-hydra-colorlog==1.1.0
-hydra-optuna-sweeper==1.1.0
-torchmetrics==0.5.1
-torch-fidelity==0.3.0
+hydra-core>=1.1.0
+hydra-colorlog>=1.1.0
+hydra-optuna-sweeper>=1.1.0
+torchmetrics>=0.5.1
+torch-fidelity>=0.3.0
 # hydra-ax-sweeper
 # hydra-ray-launcher
 # hydra-submitit-launcher
@@ -36,3 +36,4 @@ scikit-learn    # used in some callbacks
 seaborn         # used in some callbacks
 jupyterlab      # better jupyter notebooks
 pudb            # debugger
+hydra-joblib-launcher # Parallel training of multiple hyperparameters

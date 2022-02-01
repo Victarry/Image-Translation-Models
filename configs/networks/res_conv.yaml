@@ -3,5 +3,5 @@ generator:
   input_nc: null
   output_nc: null
 discriminator:
-  _target_: src.networks.conv.PixelDiscriminator
+  _target_: src.networks.conv.NLayerDiscriminator
   input_nc: null

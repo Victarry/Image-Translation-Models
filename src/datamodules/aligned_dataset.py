@@ -63,7 +63,7 @@ class AlignedDataset(Dataset):
         return len(self.AB_paths)
 
 class AlignedDatamodule(pl.LightningDataModule):
-    def __init__(self, data_root, batch_size=32, num_workers=8):
+    def __init__(self, data_root, batch_size=32, num_workers=8, **kargs):
         super().__init__()
         self.batch_size = batch_size
         self.num_workers = num_workers
