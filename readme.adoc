@@ -5,6 +5,7 @@
 ++++
 = Collections of Image Translation Models
 
+
 image:https://img.shields.io/badge/-Python 3.7--3.9-blue?style=for-the-badge&logo=python&logoColor=white[python, link=https://pytorch.org/get-started/locally/]
 image:https://img.shields.io/badge/-PyTorch 1.8+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white[pytorch, link=https://pytorch.org/]
 image:https://img.shields.io/badge/-Lightning 1.3+-792ee5?style=for-the-badge&logo=pytorchlightning&logoColor=white[pytorch_lignthing, link=https://www.pytorchlightning.ai/]
@@ -19,4 +20,45 @@ Structurally configured framework for typical generative methods with different 
 <br> <br>
 ++++
 
-toc::[]
+
+== Implemented Models
+
+.Supervised Methods
+* [x] pix2pix
+* [ ] pix2pixHD
+* [ ] SPADE
+
+.Unsupervised Methods
+* [ ] CycleGAN
+* [ ] UNIT
+* [ ] MUNIT
+
+
+== Getting Started
+
+=== Installation
+* Clone this repo
+[source, bash]
+----
+git clone https://github.com/Victarry/Image-Translation-Models.git
+cd Image-Translation-Models
+----
+* Install https://pytorch.org/get-started/locally/[Pytorch] >1.8.0 and other dependent packages.
+** For pip users, use `pip install -r requirements.txt`
+** For conda users, use `conda env create -f environment.yml`
+
+=== Data Preparation
+Download pix2pix dataset from http://efrosgans.eecs.berkeley.edu/pix2pix/datasets/ and extract into datasets folder.
+
+=== Model Traning
+* Train a model
+[source, bash]
+----
+python run.py model=pix2pix datamodule=aligned dataset=night2day networks=res_conv
+----
+* You can specify the logging dir by setting `exp_name` like `exp_name=pix2pix/exp1` in above command line.
+* Use tensorboard to visualize experiment results in `logs/runs`
+[source, bash]
+----
+tensorboard --logdir logs/runs
+----
