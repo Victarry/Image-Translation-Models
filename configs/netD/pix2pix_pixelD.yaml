@@ -1,0 +1,4 @@
+_target_: src.networks.conv.PixelDiscriminator
+input_nc: 6
+ndf: 64
+norm_layer: batch

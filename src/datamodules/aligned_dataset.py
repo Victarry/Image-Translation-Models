@@ -15,13 +15,14 @@ class AlignedDataset(Dataset):
     During test time, you need to prepare a directory '/path/to/data/test'.
     """
 
-    def __init__(self, data_root, max_dataset_size=100000):
+    def __init__(self, data_root, max_dataset_size=100000, reverse_AB=False):
         """Initialize this dataset class.
 
         Parameters:
             opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
         """
         super().__init__()
+        self.reverse_AB = reverse_AB
         self.dir_AB = Path(data_root)  # get the image directory
         self.AB_paths = sorted(make_dataset(self.dir_AB, max_dataset_size))  # get image paths
 
@@ -56,18 +57,22 @@ class AlignedDataset(Dataset):
         A = A_transform(A)
         B = B_transform(B)
 
-        return {'A': A, 'B': B, 'A_paths': str(AB_path), 'B_paths': str(AB_path)}
+        if self.reverse_AB:
+            return {'A': B, 'B': A, 'A_paths': str(AB_path), 'B_paths': str(AB_path)}
+        else:
+            return {'A': A, 'B': B, 'A_paths': str(AB_path), 'B_paths': str(AB_path)}
 
     def __len__(self):
         """Return the total number of images in the dataset."""
         return len(self.AB_paths)
 
 class AlignedDatamodule(pl.LightningDataModule):
-    def __init__(self, data_root, batch_size=32, num_workers=8, **kargs):
+    def __init__(self, data_root, batch_size=32, num_workers=8, reverse_AB=False, **kargs):
         super().__init__()
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.data_root = Path(data_root)
+        self.reverse_AB = reverse_AB
 
     def prepare_data(self):
         # download
@@ -75,8 +80,8 @@ class AlignedDatamodule(pl.LightningDataModule):
 
     def setup(self, stage=None):
         # Assign train/val datasets for use in dataloaders
-        self.train_data = AlignedDataset(self.data_root / 'train')
-        self.test_data = AlignedDataset(self.data_root / 'val')
+        self.train_data = AlignedDataset(self.data_root / 'train', reverse_AB=self.reverse_AB)
+        self.val_data = AlignedDataset(self.data_root / 'val', reverse_AB=self.reverse_AB)
 
 
     def train_dataloader(self):
@@ -87,7 +92,7 @@ class AlignedDatamodule(pl.LightningDataModule):
             shuffle=True,
         )
 
-    def test_dataloader(self):
+    def val_dataloader(self):
         return DataLoader(
-            self.test_data, batch_size=self.batch_size, num_workers=self.num_workers
+            self.val_data, batch_size=self.batch_size, num_workers=self.num_workers
         )

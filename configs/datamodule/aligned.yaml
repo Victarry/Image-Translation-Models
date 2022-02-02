@@ -4,3 +4,5 @@ batch_size: 4
 num_workers: 8
 width: 256
 height: 256
+channels: 3
+reverse_AB: False

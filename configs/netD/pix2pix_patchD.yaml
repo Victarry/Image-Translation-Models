@@ -1,0 +1,5 @@
+_target_: src.networks.conv.NLayerDiscriminator
+input_nc: 6
+ndf: 64
+n_layers: 3 # with 70x70 receptive field
+norm_layer: batch

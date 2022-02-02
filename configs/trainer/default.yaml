@@ -4,7 +4,7 @@ _target_: pytorch_lightning.Trainer
 gpus: 1
 auto_select_gpus: True
 
-max_epochs: 20
+max_epochs: ${model.scheduler.total_epochs}
 
 weights_summary: null
 progress_bar_refresh_rate: 5

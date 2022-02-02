@@ -1,0 +1,7 @@
+_target_: src.networks.conv.UnetGenerator
+input_nc: ${datamodule.channels}
+output_nc: ${datamodule.channels}
+num_downs: 8 # downsample 256x256 to 1x1
+ngf: 64
+norm_layer: batch
+use_dropout: False

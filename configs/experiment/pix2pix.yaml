@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - override /model: pix2pix
+  - override /netG: pix2pix_resnet
+  - override /netD: pix2pix_patchD
+  - override /datamodule: aligned
+
+dataset: facades
+exp_name: pix2pix/test
+
+datamodule: 
+  reverse_AB: True

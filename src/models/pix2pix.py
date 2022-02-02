@@ -25,18 +25,19 @@ class Model(BaseModel):
         input_normalize=True,
         lambda_L1=100, 
         optim="adam",
+        scheduler=None,
+        init_type="normal",
         **kwargs,
     ):
         super().__init__()
         self.save_hyperparameters()
 
         # networks
-        self.generator = hydra.utils.instantiate(
-            netG, input_nc=channels, output_nc=channels
-        )
-        self.discriminator = hydra.utils.instantiate(
-            netD, input_nc=2*channels
-        )
+        self.generator = hydra.utils.instantiate(netG)
+        self.init_weights(self.generator, init_type=init_type)
+
+        self.discriminator = hydra.utils.instantiate(netD)
+        self.init_weights(self.discriminator, init_type=init_type)
 
 
     def forward(self, z):
@@ -58,10 +59,12 @@ class Model(BaseModel):
 
             # adversarial loss is binary cross-entropy
             g_loss = self.adversarial_loss(fake_logit, valid)
-            self.log("train_loss/g_loss", g_loss, prog_bar=True)
+            self.log("train_loss/g_adv_loss", g_loss)
 
             if self.hparams.lambda_L1 > 0:
-                g_loss = g_loss + F.l1_loss(fake_B, real_B)
+                recon_loss =  F.l1_loss(fake_B, real_B)
+                g_loss = g_loss + self.hparams.lambda_L1 * recon_loss
+                self.log("train_loss/g_recon_loss", recon_loss)
         
             if self.global_step % 200 == 0:
                 # log sampled images
@@ -117,4 +120,8 @@ class Model(BaseModel):
         elif self.hparams.optim == "sgd":
             opt_g = torch.optim.SGD(self.generator.parameters(), lr=lrG)
             opt_d = torch.optim.SGD(self.discriminator.parameters(), lr=lrD)
-        return [opt_g, opt_d]
+        
+        schedule_g = self.get_scheduler(opt_g)
+        schedule_d = self.get_scheduler(opt_d)
+
+        return [opt_g, opt_d], [schedule_g, schedule_d]

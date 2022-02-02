@@ -1,0 +1,7 @@
+_target_: src.networks.conv.ResnetGenerator
+input_nc: ${datamodule.channels}
+output_nc: ${datamodule.channels}
+ngf: 64
+norm_layer: batch
+use_dropout: False
+n_blocks: 9

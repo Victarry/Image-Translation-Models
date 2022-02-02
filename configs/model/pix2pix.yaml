@@ -1,13 +1,23 @@
 _target_: src.models.pix2pix.Model
 loss_mode: vanilla
-channels: 3
+channels: ${datamodule.channels}
 width: ${datamodule.width}
 height: ${datamodule.height}
-lrG: 0.001
-lrD: 0.0002
+input_normalize: True
+
+netG: ${netG}
+netD: ${netD}
+init_type: normal
+
+lrG: 0.0002
+lrD: 0.0001
 b1: 0.5
 b2: 0.999
 optim: adam
-input_normalize: True
-netG: ${networks.generator}
-netD: ${networks.discriminator}
+scheduler:
+  total_epochs: 200
+  epoch_count: 1 # the starting epoch count
+  n_epochs: 100 # number of epochs with the initial learning rate
+  n_epochs_decay: 100 # number of epochs to linearly decay learning rate to zero
+  lr_decay_iters: 50 # multiply by a gamma every lr_decay_iters iterations if lr_policy is step
+  lr_policy: linear

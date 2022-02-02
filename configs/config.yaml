@@ -5,7 +5,8 @@ defaults:
   - trainer: default
   - model: null
   - datamodule: null
-  - networks: null
+  - netG: null
+  - netD: null
   - callbacks: null # set this to null if you don't want to use callbacks
   - logger: tensorboard # set logger here or use command line (e.g. `python run.py logger=wandb`)
   - hydra: default
@@ -24,7 +25,7 @@ defaults:
 work_dir: ${hydra:runtime.cwd}
 
 # path to folder with data
-data_dir: ${work_dir}/datasets/
+data_dir: ${work_dir}/datasets
 
 # which dataset to use in the datasets folder
 dataset: null
