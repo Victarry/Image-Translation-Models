@@ -7,6 +7,7 @@ import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
 from .base import BaseModel
+import torchmetrics
 
 
 class Model(BaseModel):
@@ -27,6 +28,7 @@ class Model(BaseModel):
         optim="adam",
         scheduler=None,
         init_type="normal",
+        eval_fid=True,
         **kwargs,
     ):
         super().__init__()
@@ -40,10 +42,10 @@ class Model(BaseModel):
         self.init_weights(self.discriminator, init_type=init_type)
 
 
-    def forward(self, z):
-        output = self.generator(z)
+    def forward(self, img_A):
+        output = self.generator(img_A)
         output = output.reshape(
-            z.shape[0], self.hparams.channels, self.hparams.height, self.hparams.width
+            img_A.shape[0], self.hparams.channels, self.hparams.height, self.hparams.width
         )
         return output
 
@@ -97,6 +99,26 @@ class Model(BaseModel):
             self.log("train_log/fake_logit", fake_logit.mean())
 
             return d_loss
+    
+    def on_validation_epoch_start(self) -> None:
+        if self.hparams.eval_fid:
+            self.fid = torchmetrics.FID().to(self.device)
+
+    def validation_step(self, batch, batch_idx):
+        real_A, real_B = batch["A"], batch["B"]
+        fake_B = self.forward(real_A)
+        if self.hparams.eval_fid:
+            self.fid.update(self.image_float2int(real_B), real=True)
+            self.fid.update(self.image_float2int(fake_B), real=False)
+        if batch_idx == 0:
+            self.log_images(fake_B, "val_images/fake_B")
+            self.log_images(real_B, "val_images/real_B")
+            self.log_images(real_A, "val_images/real_A")
+ 
+
+    def on_validation_epoch_end(self):
+        if self.hparams.eval_fid:
+            self.log("metrics/fid", self.fid.compute())
 
     def adversarial_loss(self, y_hat, y):
         if self.hparams.loss_mode == "vanilla":

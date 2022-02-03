@@ -21,3 +21,5 @@ scheduler:
   n_epochs_decay: 100 # number of epochs to linearly decay learning rate to zero
   lr_decay_iters: 50 # multiply by a gamma every lr_decay_iters iterations if lr_policy is step
   lr_policy: linear
+
+eval_fid: True
