@@ -2,7 +2,23 @@ _target_: src.datamodules.aligned_dataset.AlignedDatamodule
 data_root: ${data_dir}/${dataset}
 batch_size: 4
 num_workers: 8
-width: 256
 height: 256
-channels: 3
+width: 512
+in_channels: 35
+out_channels: 3
 reverse_AB: False
+format: normal
+
+A_transforms:
+  resize:
+    width: ${datamodule.width}
+    height: ${datamodule.height}
+    method: nearest
+  onehot:
+    num_classes: ${datamodule.in_channels}
+
+B_transforms:
+  resize:
+    width: ${datamodule.width}
+    height: ${datamodule.height}
+  convert: True

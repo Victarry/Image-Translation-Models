@@ -1,0 +1,136 @@
+from torch import nn
+import torchvision
+import torch
+import torch.nn.functional as F
+
+class PerceptualLoss(nn.Module):
+    def __init__(self, layers=["relu1_2", "relu2_2", "relu3_2", "relu4_2", "relu5_2"]) -> None:
+        super().__init__()
+        self.network = VGG16()
+        self.layers = layers
+    
+    def forward(self, img1, img2):
+        img1_features = self.network(img1)
+        img2_features = self.network(img2)
+        losses = []
+        for layer in self.layers:
+            loss = F.l1_loss(img1_features[layer], img2_features[layer])
+            losses.append(loss)
+        return torch.stack(losses).mean()
+
+class MaskedPerceptualLoss(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+
+class VGG16(nn.Module):
+    def __init__(self):
+        super(VGG16, self).__init__()
+        self.register_buffer(
+            'mean',
+            torch.tensor([0.485, 0.456, 0.406]).view(-1, 1, 1))
+        self.register_buffer(
+            'std',
+            torch.tensor([0.229, 0.224, 0.225]).view(-1, 1, 1))
+        features = torchvision.models.vgg16(pretrained=True).features
+        self.relu1_1 = torch.nn.Sequential()
+        self.relu1_2 = torch.nn.Sequential()
+
+        self.relu2_1 = torch.nn.Sequential()
+        self.relu2_2 = torch.nn.Sequential()
+
+        self.relu3_1 = torch.nn.Sequential()
+        self.relu3_2 = torch.nn.Sequential()
+        self.relu3_3 = torch.nn.Sequential()
+
+        self.relu4_1 = torch.nn.Sequential()
+        self.relu4_2 = torch.nn.Sequential()
+        self.relu4_3 = torch.nn.Sequential()
+
+        self.relu5_1 = torch.nn.Sequential()
+        self.relu5_2 = torch.nn.Sequential()
+        self.relu5_3 = torch.nn.Sequential()
+
+        for x in range(2):
+            self.relu1_1.add_module(str(x), features[x])
+
+        for x in range(2, 4):
+            self.relu1_2.add_module(str(x), features[x])
+
+        for x in range(4, 7):
+            self.relu2_1.add_module(str(x), features[x])
+
+        for x in range(7, 9):
+            self.relu2_2.add_module(str(x), features[x])
+
+        for x in range(9, 12):
+            self.relu3_1.add_module(str(x), features[x])
+
+        for x in range(12, 14):
+            self.relu3_2.add_module(str(x), features[x])
+
+        for x in range(14, 16):
+            self.relu3_3.add_module(str(x), features[x])
+
+        for x in range(16, 18):
+            self.relu4_1.add_module(str(x), features[x])
+
+        for x in range(18, 21):
+            self.relu4_2.add_module(str(x), features[x])
+
+        for x in range(21, 23):
+            self.relu4_3.add_module(str(x), features[x])
+
+        for x in range(23, 26):
+            self.relu5_1.add_module(str(x), features[x])
+
+        for x in range(26, 28):
+            self.relu5_2.add_module(str(x), features[x])
+
+        for x in range(28, 30):
+            self.relu5_3.add_module(str(x), features[x])
+
+        # don't need the gradients, just want the features
+        for param in self.parameters():
+            param.requires_grad = False
+
+    def forward(self, x):
+        # NOTE: input should be in range [0, 1]
+        # denoramlize from [-1, 1] to [0, 1]
+        x = (x + 1) * 0.5
+        # normalize with ImageNet mean and variance
+        x = (x - self.mean) / self.std
+
+        relu1_1 = self.relu1_1(x)
+        relu1_2 = self.relu1_2(relu1_1)
+
+        relu2_1 = self.relu2_1(relu1_2)
+        relu2_2 = self.relu2_2(relu2_1)
+
+        relu3_1 = self.relu3_1(relu2_2)
+        relu3_2 = self.relu3_2(relu3_1)
+        relu3_3 = self.relu3_3(relu3_2)
+
+        relu4_1 = self.relu4_1(relu3_3)
+        relu4_2 = self.relu4_2(relu4_1)
+        relu4_3 = self.relu4_3(relu4_2)
+
+        relu5_1 = self.relu5_1(relu4_3)
+        relu5_2 = self.relu5_2(relu5_1)
+        relu5_3 = self.relu5_3(relu5_2)
+
+        out = {
+            'relu1_1': relu1_1,
+            'relu1_2': relu1_2,
+            'relu2_1': relu2_1,
+            'relu2_2': relu2_2,
+            'relu3_1': relu3_1,
+            'relu3_2': relu3_2,
+            'relu3_3': relu3_3,
+            'relu4_1': relu4_1,
+            'relu4_2': relu4_2,
+            'relu4_3': relu4_3,
+            'relu5_1': relu5_1,
+            'relu5_2': relu5_2,
+            'relu5_3': relu5_3,
+        }
+        return out

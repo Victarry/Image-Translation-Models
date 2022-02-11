@@ -19,7 +19,7 @@ class BaseModel(LightningModule):
 
     def get_grid_images(self, imgs, nimgs=64, nrow=8):
         imgs = imgs.reshape(
-            -1, self.hparams.channels, self.hparams.height, self.hparams.width
+            -1, self.hparams.out_channels, self.hparams.height, self.hparams.width
         )
         if self.hparams.input_normalize:
             grid = torchvision.utils.make_grid(
