@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - override /model: pix2pixHD
+  - override /datamodule: aligned
+
+dataset: cityscapes1024
+exp_name: pix2pixHD/baseline
+
+datamodule: 
+  type: normal
+  batch_size: 16

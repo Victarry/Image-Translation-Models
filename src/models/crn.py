@@ -135,7 +135,7 @@ class Model(BaseModel):
 
         return g_loss
 
-    
+
     def on_validation_epoch_start(self) -> None:
         if self.hparams.eval_fid:
             self.fid = torchmetrics.FID().to(self.device)

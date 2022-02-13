@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - override /model: crn
+  - override /datamodule: aligned
+
+dataset: cityscapes1024
+exp_name: crn/baseline_256
+
+datamodule: 
+  type: normal
+  batch_size: 4

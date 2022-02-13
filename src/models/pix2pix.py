@@ -13,7 +13,8 @@ import torchmetrics
 class Model(BaseModel):
     def __init__(
         self,
-        channels, # channels of input imagee
+        in_channels, # channels of input imagee
+        out_channels, # channels of input imagee
         width, # width of input image
         height, # height of input image
         netG, # config dict of generator
@@ -45,7 +46,7 @@ class Model(BaseModel):
     def forward(self, img_A):
         output = self.generator(img_A)
         output = output.reshape(
-            img_A.shape[0], self.hparams.channels, self.hparams.height, self.hparams.width
+            img_A.shape[0], self.hparams.out_channels, self.hparams.height, self.hparams.width
         )
         return output
 
@@ -119,12 +120,6 @@ class Model(BaseModel):
     def on_validation_epoch_end(self):
         if self.hparams.eval_fid:
             self.log("metrics/fid", self.fid.compute())
-
-    def adversarial_loss(self, y_hat, y):
-        if self.hparams.loss_mode == "vanilla":
-            return F.binary_cross_entropy_with_logits(y_hat, y)
-        elif self.hparams.loss_mode == "lsgan":
-            return F.mse_loss(y_hat, y)
 
     def configure_optimizers(self):
         lrG = self.hparams.lrG

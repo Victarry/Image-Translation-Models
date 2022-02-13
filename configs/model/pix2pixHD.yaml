@@ -1,13 +1,11 @@
-_target_: src.models.pix2pix.Model
-loss_mode: vanilla
+_target_: src.models.pix2pixHD.Model
+loss_mode: lsgan
 in_channels: ${datamodule.in_channels}
 out_channels: ${datamodule.out_channels}
 width: ${datamodule.width}
 height: ${datamodule.height}
 input_normalize: True
 
-netG: ${netG}
-netD: ${netD}
 init_type: normal
 
 lrG: 0.0002
@@ -23,4 +21,4 @@ scheduler:
   lr_decay_iters: 50 # multiply by a gamma every lr_decay_iters iterations if lr_policy is step
   lr_policy: linear
 
-eval_fid: True
+eval_fid: False

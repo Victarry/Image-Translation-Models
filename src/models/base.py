@@ -5,6 +5,7 @@ import numpy as np
 import PIL
 import torch
 import torchvision
+import torch.nn.functional as F
 from pytorch_lightning import LightningModule
 from src.utils.utils import get_logger
 from torch.nn import init
@@ -16,6 +17,16 @@ class BaseModel(LightningModule):
     def __init__(self) -> None:
         super().__init__()
         self.console = get_logger()
+    
+    def adversarial_loss(self, y_hat, y):
+        if self.hparams.loss_mode == "vanilla":
+            return F.binary_cross_entropy_with_logits(y_hat, y)
+        elif self.hparams.loss_mode == "lsgan":
+            return F.mse_loss(y_hat, y)
+        elif self.hparams.loss_mode == 'hinge':
+            # max(0, 1-logit) for real samples and max(0, 1+logit) for fake samples
+            y = -(y-0.5)*2 # change from {0, 1} to {1, -1}
+            return torch.maximum(torch.zeros_like(y), 1+y*y_hat).mean()
 
     def get_grid_images(self, imgs, nimgs=64, nrow=8):
         imgs = imgs.reshape(

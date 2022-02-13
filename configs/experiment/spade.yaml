@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - override /model: spade
+  - override /datamodule: aligned
+
+dataset: cityscapes1024
+exp_name: spade/baseline
+
+datamodule: 
+  type: normal
+  batch_size: 16

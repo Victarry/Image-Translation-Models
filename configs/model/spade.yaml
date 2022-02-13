@@ -1,18 +1,16 @@
-_target_: src.models.pix2pix.Model
-loss_mode: vanilla
+_target_: src.models.spade.Model
+loss_mode: hinge
 in_channels: ${datamodule.in_channels}
 out_channels: ${datamodule.out_channels}
 width: ${datamodule.width}
 height: ${datamodule.height}
 input_normalize: True
 
-netG: ${netG}
-netD: ${netD}
 init_type: normal
 
-lrG: 0.0002
-lrD: 0.0001
-b1: 0.5
+lrG: 0.0001
+lrD: 0.0004
+b1: 0
 b2: 0.999
 optim: adam
 scheduler:
@@ -23,4 +21,4 @@ scheduler:
   lr_decay_iters: 50 # multiply by a gamma every lr_decay_iters iterations if lr_policy is step
   lr_policy: linear
 
-eval_fid: True
+eval_fid: False
